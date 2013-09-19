@@ -134,7 +134,7 @@ class calculusME:
             self.cleanup()
             
     def sanitize(self):
-        ''''''
+        '''confirm input is only an integer or x'''
         if self.lim is None or self.x is None:
             return False
         lim = re.findall('(\w)', self.lim)
