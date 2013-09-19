@@ -27,7 +27,7 @@ class calculusME:
                 self.opts[k] = True
             if cmd == 'help':
                 print self.options()
-            elif cmd == ('quit' or 'exit'):
+            elif cmd == 'quit' or cmd == 'exit':
                 break
             elif cmd in cmds:
                 print getattr(self, cmd)()
