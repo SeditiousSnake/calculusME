@@ -17,6 +17,7 @@ class calculusME:
     -- if just 'x', put '1x'
     -- type 'help' for options
     -- type 'quit' to exit
+    -- type 'rules' for this menu
     -- absolutely, positively NO SPACES!""")
         
         self.lim = None
@@ -29,6 +30,8 @@ class calculusME:
                 print self.options()
             elif cmd == 'quit' or cmd == 'exit':
                 break
+            elif cmd == 'rules':
+                self.__init__()
             elif cmd in cmds:
                 print getattr(self, cmd)()
             else:
@@ -108,7 +111,7 @@ class calculusME:
                     continue
                 i += 1
                 '''get .0001 more away from approaching int'''
-                inc = .0001*i*side
+                inc = float(.0001*i*side)
                 eq = self.substitute_x(
                     self.lim, str(int(x)+inc))
                 approaching.append(eval(eq))
@@ -119,10 +122,10 @@ class calculusME:
                 '''if the difference from one limit
                    to the next is greater than one,
                    the limit does not exist'''
-                if abs(l-approaching[-1]) > .01:
+                if abs(l-approaching[-1]) > 1:
                     return 'limit does not exist'
             '''we found the limit'''
-            if abs(round(approaching[1])-approaching[1]) < .01:
+            if abs(round(approaching[1])-approaching[1]) < 1:
                 return 'limit is '+str(round(approaching[1]))
             return 'limit is '+str(round(approaching[0], 2))
          
