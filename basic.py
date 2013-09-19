@@ -10,16 +10,7 @@ cmds = ['limit', 'derivative']
 class calculusME:
     def __init__(self):
         self.cleanup()
-        print(
-"""Rules of CalculusME:
-    -- use parentheses ie (2x+2)/(1x+1)
-    -- use 'x' for variable
-    -- if just 'x', put '1x'
-    -- type 'help' for options
-    -- type 'quit' to exit
-    -- type 'rules' for this menu
-    -- absolutely, positively NO SPACES!""")
-        
+        self.rules()
         self.lim = None
         while True:
             cmd = raw_input('>')
@@ -31,11 +22,22 @@ class calculusME:
             elif cmd == 'quit' or cmd == 'exit':
                 break
             elif cmd == 'rules':
-                self.__init__()
+                self.rules()
             elif cmd in cmds:
                 print getattr(self, cmd)()
             else:
                 print 'no command %s' % cmd
+    
+    def rules(self):
+        print(
+"""Rules of CalculusME:
+    -- use parentheses ie (2x+2)/(1x+1)
+    -- use 'x' for variable
+    -- if just 'x', put '1x'
+    -- type 'help' for options
+    -- type 'quit' to exit
+    -- type 'rules' for this menu
+    -- absolutely, positively NO SPACES!""")
     
     def options(self):
         return(
