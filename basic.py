@@ -65,11 +65,13 @@ class calculusME:
         try:
             dydx = []
             eq = ""
-            f_of_x = raw_input("f(x)=")
-            fprime = raw_input("f'@")                                                                                                                                                                              
+            self.lim = f_of_x = raw_input("f(x)=")
+            self.x = fprime = raw_input("f'@")
+            #if self.sanitize() is False:
+            #    return 'only integers and x'
             f_of_a = self.substitute_x(f_of_x, "("+str(fprime)+")")
             f_of_a_plus_x = self.substitute_x(
-                f_of_x,"("+str(fprime)+'+1x)')
+                f_of_x,"("+str(fprime)+'+(1x))')
             self.lim = "(("+f_of_a_plus_x+")-("+f_of_a+"))/(1x)"
             self.x = 0
             return self.limit().replace('limit','derivative')
@@ -85,6 +87,8 @@ class calculusME:
             self.x = raw_input('x->')
         if self.lim is 'x':
             return 'limit is '+self.x
+        if self.sanitize() is False:
+            return 'only integers and x'
         self.format_equation()
         try:
             approaching = []
@@ -128,6 +132,30 @@ class calculusME:
             return 'unforeseen error. please try again'
         finally:
             self.cleanup()
+            
+    def sanitize(self):
+        ''''''
+        if self.lim is None or self.x is None:
+            return False
+        lim = re.findall('(\w)', self.lim)
+        for l in lim:
+            try:
+                if l is not 'x':
+                    int(l)
+                elif l is 'x':
+                    pass
+            except ValueError:
+                self.cleanup()
+                return False
+        
+        for i in str(self.x):
+            try:
+                int(str(i))
+            except ValueError:
+                self.cleanup()
+                return False
+               
+        return True
             
     def cleanup(self):
         self.lim = None
