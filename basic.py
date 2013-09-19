@@ -119,7 +119,7 @@ class calculusME:
                 '''if the difference from one limit
                    to the next is greater than one,
                    the limit does not exist'''
-                if abs(l-approaching[-1]) > 1:
+                if abs(l-approaching[-1]) > .01:
                     return 'limit does not exist'
             '''we found the limit'''
             if abs(round(approaching[1])-approaching[1]) < .01:
