@@ -69,9 +69,9 @@ class calculusME:
             self.x = fprime = raw_input("f'@")
             #if self.sanitize() is False:
             #    return 'only integers and x'
-            f_of_a = self.substitute_x(f_of_x, "("+str(fprime)+")")
+            f_of_a = self.substitute_x(f_of_x, "("+str(float(fprime))+")")
             f_of_a_plus_x = self.substitute_x(
-                f_of_x,"("+str(fprime)+'+(1x))')
+                f_of_x,"("+str(fprime)+'+1x)')
             self.lim = "(("+f_of_a_plus_x+")-("+f_of_a+"))/(1x)"
             self.x = 0
             return self.limit().replace('limit','derivative')
@@ -103,7 +103,7 @@ class calculusME:
                         break
                     '''if we're approaching from the right,
                        switch to the left'''
-                    i = 1
+                    i = 0
                     side = -1
                     continue
                 i += 1
@@ -134,7 +134,7 @@ class calculusME:
             self.cleanup()
             
     def sanitize(self):
-        '''confirm input is only an integer or x'''
+        ''''''
         if self.lim is None or self.x is None:
             return False
         lim = re.findall('(\w)', self.lim)
