@@ -111,8 +111,7 @@ calctables:
 +----------+----------+
 |   f(x)   |     x    |""")
             for k, v in dict(sorted(self.dset.iteritems(), key=operator.itemgetter(1))).iteritems():
-                print(
-                    """+----------+----------+""")
+                print("""+----------+----------+""")
                 print(
                     ('|   %s'+(' '*(7-len(str(k))))+'|   %s'+(' '*(7-len(str(v))))) % (k,v)+'|')
             
