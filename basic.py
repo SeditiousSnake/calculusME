@@ -12,7 +12,7 @@ dscmds = ['avgroc', 'instroc']
 
 class calculusME:
     def __init__(self):
-        self.cleanup()
+        self.cleanup(dset=True)
         self.rules()
         self.lim = None
         while True:
@@ -137,7 +137,7 @@ calctables:
                 if cmd in dscmds:
                     print getattr(self, cmd)()
                 elif cmd == 'q!':
-                    self.cleanup()
+                    self.cleanup(dset=True)
                     print 'dataset removed'
                     break
                 elif cmd == 'wq!':
@@ -149,27 +149,50 @@ calctables:
             return 'menu error'
         
     def avgroc(self):
+        '''
+        find average rate of change
+        '''
         if self.x1 is None or self.x2 is None:
-            self.x1 = raw_input('from>')
-            self.x2 = raw_input('to>')
+            self.x1 = float(raw_input('from>'))
+            self.x2 = float(raw_input('to>'))
         for k, v in self.dset.iteritems():
-            if v == self.x1:
-                f_of_x1 = k
-            elif v == self.x2:
-                f_of_x2 = k
-            
-        self.avg = "(%s - %s)/(%s - %s)" % (float(f_of_x2),
-                                            float(f_of_x1),
-                                            float(self.x2),
-                                            float(self.x1))
-        return "average rate of change is " + str(eval(self.avg))
+            if float(v) == self.x1:
+                f_of_x1 = float(k)
+            elif float(v) == self.x2:
+                f_of_x2 = float(k)
+        
+        try:
+            self.avg = "(%s - %s)/(%s - %s)" % (f_of_x2,
+                                                f_of_x1,
+                                                self.x2,
+                                                self.x1)
+            return 'average rate of change is ' + str(eval(self.avg))
+        except:
+            return 'can\'t find rate of change. Insufficient values in dataset'
+        finally:
+            self.cleanup()
         
     def instroc(self):
+        '''
+        find instantaneous rate of change
+        '''
         try:
             self.x = raw_input('at>')
-#           for k,v in self.dset.iteritems():
-#                if v == self.
-            return "instantaneous rate of change is " + self.derivative().replace('derivative is','')
+            try:
+                lower = [v for v in self.dset.values() if v < float(self.x)]
+                higher = [v for v in self.dset.values() if v > float(self.x)]
+                self.x1 = float(min(lower, key=lambda x:abs(float(x)-float(self.x))))
+                self.x2 = float(min(higher, key=lambda x:abs(float(x)-float(self.x))))
+            except:
+                return 'can\'t find rate of change. Insufficient values in dataset'
+                
+            for k, v in self.dset.iteritems():
+                if float(v) == self.x1:
+                    f_of_x1 = float(k)
+                elif float(v) == self.x2:
+                    f_of_x2 = float(k)
+            
+            return 'instantaneous rate of change is ' + str((f_of_x2 - f_of_x1) / (self.x2 - self.x1))
         except:
             return 'error, review your submission'
         finally:
@@ -197,7 +220,7 @@ calctables:
 
     def limit(self):
         '''if f(x) is not defined, ask for it'''
-        if self.lim is None:
+        if self.lim is None or self.x is None:
             self.lim = raw_input('lim ')
             self.x = raw_input('x->')
         if self.lim is 'x':
@@ -272,15 +295,16 @@ calctables:
                
         return True
             
-    def cleanup(self):
+    def cleanup(self, dset=False):
         self.lim = None
         self.x = None
-        self.dset = {}
+        self.x1 = None
+        self.x2 = None
+        self.avg = None
         self.entered = False
         self.opts = {'show_work': False,
                      'new_dset': False}
-        if self.dset:
-            print 'dataset removed'
-        
+        if dset:
+            self.dset = {}
 
 m = calculusME()
