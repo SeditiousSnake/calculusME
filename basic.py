@@ -5,7 +5,7 @@ import re
 
 '''Calculus Made Easy'''
 
-cmds = ['limit', 'derivative']
+cmds = ['limit', 'derivative', 'dataset']
 
 class calculusME:
     def __init__(self):
@@ -65,6 +65,27 @@ class calculusME:
         '''replace x multiples and increment it'''
         eq = eq.replace('x', '*'+x)
         return eq
+    
+    def dataset(self):
+        self.cleanup()
+        try:
+            print 'enter your table data (ie 1994(enter)0708(enter)'
+            while entered is False:
+                key = raw_input()
+                val = raw_input()
+                self.dset[key] = val
+                if raw_input('enter q if finished>') == 'q':
+                    entered = True
+            print(
+"""_______________________
+|   f(x)   |     x    |""")
+            for k, v in self.dset.iteritems():
+                print """-----------------------"""
+                print(
+                    ('|   %s'+(' '*(7-len(k)))+'|   %s'+(' '*(7-len(v)))) % (k,v)+'|')
+            print """-----------------------"""
+        except:
+            return 'data set entered incorrectly'
     
     def derivative(self):
         try:
@@ -165,6 +186,8 @@ class calculusME:
     def cleanup(self):
         self.lim = None
         self.x = None
+        self.dset = {}
+        entered = False
         self.opts = {'show_work': False}
         
 
