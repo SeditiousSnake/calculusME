@@ -75,10 +75,12 @@ class calculusME:
             self.cleanup()
             try:
                 print 'enter your table data (ie 1994(enter)0708(enter)'
+                self.kunit = raw_input('y unit>')
+                self.vunit = raw_input('x unit>')
                 while self.entered is False:
                     try:
-                        key = int(raw_input('f(x)'))
-                        val = int(raw_input('x'))
+                        key = int(raw_input('f(x)>'))
+                        val = int(raw_input('x>'))
                     except ValueError:
                         return "f(x) and x cannot contain letters"
                     self.dset[key] = val
@@ -99,7 +101,8 @@ class calculusME:
             re.search('(.+)(\.\d+)', str(date.now().time())).group(1))
     
     def display_dataset(self):
-        print(
+        if self.dset:
+            print(
 """
 turntables:
 [ ( o )/][|_|][ ( o )/]
@@ -107,15 +110,19 @@ turntables:
 calctables:
 +----------+----------+
 |   f(x)   |     x    |""")
-        for k, v in dict(sorted(self.dset.iteritems(), key=operator.itemgetter(1))).iteritems():
-            print(
-                """+----------+----------+""")
-            print(
-                ('|   %s'+(' '*(7-len(str(k))))+'|   %s'+(' '*(7-len(str(v))))) % (k,v)+'|')
+            for k, v in dict(sorted(self.dset.iteritems(), key=operator.itemgetter(1))).iteritems():
+                print(
+                    """+----------+----------+""")
+                print(
+                    ('|   %s'+(' '*(7-len(str(k))))+'|   %s'+(' '*(7-len(str(v))))) % (k,v)+'|')
             
-        print(
-            """+----------+----------+""")
-        print 'dataset acquired'
+            print("""+----------+----------+""")
+            print(
+                ('|  %s'+(' '*(7-len(self.kunit)))+'|  %s'+(' '*(8-len(self.vunit)))) % (self.kunit, self.vunit)+'|')
+            print("""+----------+----------+""")
+            print 'dataset acquired'
+        else:
+            print 'No dataset to display'
     
     def dataset_opts(self):
         try:
@@ -153,8 +160,11 @@ calctables:
         find average rate of change
         '''
         if self.x1 is None or self.x2 is None:
-            self.x1 = float(raw_input('from>'))
-            self.x2 = float(raw_input('to>'))
+            try:
+                self.x1 = float(raw_input('from>'))
+                self.x2 = float(raw_input('to>'))
+            except ValueError:
+                return 'must be integer'
         for k, v in self.dset.iteritems():
             if float(v) == self.x1:
                 f_of_x1 = float(k)
@@ -166,7 +176,7 @@ calctables:
                                                 f_of_x1,
                                                 self.x2,
                                                 self.x1)
-            return 'average rate of change is ' + str(eval(self.avg))
+            return 'average rate of change is %s %s/%s' % (str(eval(self.avg)), self.kunit, self.vunit)
         except:
             return 'can\'t find rate of change. Insufficient values in dataset'
         finally:
@@ -177,7 +187,10 @@ calctables:
         find instantaneous rate of change
         '''
         try:
-            self.x = raw_input('at>')
+            try:
+                self.x = float(raw_input('at>'))
+            except:
+                return 'must be an integer'
             try:
                 lower = [v for v in self.dset.values() if v < float(self.x)]
                 higher = [v for v in self.dset.values() if v > float(self.x)]
@@ -192,9 +205,12 @@ calctables:
                 elif float(v) == self.x2:
                     f_of_x2 = float(k)
             
-            return 'instantaneous rate of change is ' + str((f_of_x2 - f_of_x1) / (self.x2 - self.x1))
+            return 'instantaneous rate of change is %s %s/%s' % (str((f_of_x2 - f_of_x1) / (self.x2 - self.x1)),
+                                                                 self.kunit,
+                                                                 self.vunit)
         except:
             return 'error, review your submission'
+            
         finally:
             self.cleanup()
     
@@ -203,8 +219,25 @@ calctables:
             dydx = []
             eq = ""
             if self.lim is None and self.x is None:
-                self.lim = f_of_x = raw_input("f(x)=")
-                self.x = fprime = raw_input("f'@")
+                try:
+                    self.lim = f_of_x = raw_input("f(x)=")
+                    self.x = fprime = raw_input("f'@")
+                    for w in re.findall('(\w)', self.lim):
+                        if w is not 'x':
+                            try:
+                                int(w)
+                            except:
+                                return 'unknown variable'
+                        else:
+                            pass
+                    try:
+                        int(self.x)
+                    except ValueError:
+                        return 'x must be an integer'
+                        
+                except:
+                    return 'error handling the equation'
+                    
             if self.sanitize() is False:
                 return 'only integers and x'
             f_of_a = self.substitute_x(f_of_x, "("+str(float(fprime))+")")
@@ -306,5 +339,7 @@ calctables:
                      'new_dset': False}
         if dset:
             self.dset = {}
+            self.kunit = None
+            self.vunit = None
 
 m = calculusME()
