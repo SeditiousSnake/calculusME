@@ -6,6 +6,7 @@ import re
 '''Calculus Made Easy'''
 
 cmds = ['limit', 'derivative', 'dataset']
+dscmds = ['avgroc', 'instroc']
 
 class calculusME:
     def __init__(self):
@@ -43,7 +44,8 @@ class calculusME:
         return(
 """Options:
     -- limit
-    -- derivative""")
+    -- derivative
+    -- dataset""")
     
     def format_equation(self):
         '''format f(x) for exponents'''
@@ -67,25 +69,92 @@ class calculusME:
         return eq
     
     def dataset(self):
-        self.cleanup()
-        try:
-            print 'enter your table data (ie 1994(enter)0708(enter)'
-            while entered is False:
-                key = raw_input()
-                val = raw_input()
-                self.dset[key] = val
-                if raw_input('enter q if finished>') == 'q':
-                    entered = True
-            print(
-"""_______________________
+        if not self.dset or self.opts['new_dset'] == True:
+            self.cleanup()
+            try:
+                print 'enter your table data (ie 1994(enter)0708(enter)'
+                while self.entered is False:
+                    key = raw_input('f(x)')
+                    val = raw_input('x')
+                    self.dset[key] = val
+                    if raw_input('q to quit, any to cont.>') == 'q':
+                        self.entered = True
+                    else:
+                        pass
+                
+            except:
+                return 'data set entered incorrectly'
+            
+        self.display_dataset()
+        self.dataset_opts()
+        self.dataset_menu()
+    
+    def display_dataset(self):
+        print(
+"""
+turntables:
+[ ( o )/][|_|][ ( o )/]
+
++----------+----------+
 |   f(x)   |     x    |""")
-            for k, v in self.dset.iteritems():
-                print """-----------------------"""
-                print(
-                    ('|   %s'+(' '*(7-len(k)))+'|   %s'+(' '*(7-len(v)))) % (k,v)+'|')
-            print """-----------------------"""
+        for k, v in self.dset.iteritems():
+            print(
+                """+----------+----------+""")
+            print(
+                ('|   %s'+(' '*(7-len(k)))+'|   %s'+(' '*(7-len(v)))) % (k,v)+'|')
+            
+        print(
+            """+----------+----------+""")
+        print 'dataset acquired'
+    
+    def dataset_opts(self):
+        try:
+            print(
+"""
+-- Dataset commands:
+    -- avgroc (avg rate of change)
+    -- instroc (instantaneous rate of change)
+    -- wq! (save and quit)
+    -- q! (quit w/o saving)
+""")
         except:
-            return 'data set entered incorrectly'
+            print 'display error'
+
+    def dataset_menu(self):
+        try:
+            while True:
+                cmd = raw_input('ds>')
+                if cmd in dscmds:
+                    getattr(self, cmd)()
+                elif cmd == 'q!':
+                    self.cleanup()
+                    print 'dataset removed'
+                    break
+                elif cmd == 'wq!':
+                    print 'dataset saved'
+                    break
+                else:
+                    print 'unknown command %s' % cmd
+        except:
+            return 'menu error'
+        
+    def avgroc(self):
+        x1 = raw_input('from>')
+        x2 = raw_input('to>')
+        for k, v in self.dset.iteritems():
+            if v == x1:
+                f_of_x1 = k
+            elif v == x2:
+                f_of_x2 = k
+            
+        avg = "(%s - %s)/(%s - %s)" % (float(f_of_x2),
+                                       float(f_of_x1),
+                                       float(x2),
+                                       float(x1))
+        print "average rate of change is " + str(eval(avg))
+        
+    #def instroc(self):
+    #    
     
     def derivative(self):
         try:
@@ -187,8 +256,11 @@ class calculusME:
         self.lim = None
         self.x = None
         self.dset = {}
-        entered = False
-        self.opts = {'show_work': False}
+        self.entered = False
+        self.opts = {'show_work': False,
+                     'new_dset': False}
+        if self.dset:
+            print 'dataset removed'
         
 
 m = calculusME()
