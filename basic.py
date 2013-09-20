@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
+import operator
 import math
 import re
+from datetime import datetime as date
 
 '''Calculus Made Easy'''
 
@@ -74,20 +76,27 @@ class calculusME:
             try:
                 print 'enter your table data (ie 1994(enter)0708(enter)'
                 while self.entered is False:
-                    key = raw_input('f(x)')
-                    val = raw_input('x')
+                    try:
+                        key = int(raw_input('f(x)'))
+                        val = int(raw_input('x'))
+                    except ValueError:
+                        return "f(x) and x cannot contain letters"
                     self.dset[key] = val
-                    if raw_input('q to quit, any to cont.>') == 'q':
+                    if raw_input('"n" to cont.>') != 'n':
                         self.entered = True
                     else:
                         pass
-                
+                print 'building dataset...'
+                print 'dataset session started @ %s' % (
+                    re.search('(.+)(\.\d+)', str(date.now().time())).group(1))
             except:
                 return 'data set entered incorrectly'
             
         self.display_dataset()
         self.dataset_opts()
         self.dataset_menu()
+        return 'dataset session exit @ %s' % (
+            re.search('(.+)(\.\d+)', str(date.now().time())).group(1))
     
     def display_dataset(self):
         print(
@@ -95,13 +104,14 @@ class calculusME:
 turntables:
 [ ( o )/][|_|][ ( o )/]
 
+calctables:
 +----------+----------+
 |   f(x)   |     x    |""")
-        for k, v in self.dset.iteritems():
+        for k, v in dict(sorted(self.dset.iteritems(), key=operator.itemgetter(1))).iteritems():
             print(
                 """+----------+----------+""")
             print(
-                ('|   %s'+(' '*(7-len(k)))+'|   %s'+(' '*(7-len(v)))) % (k,v)+'|')
+                ('|   %s'+(' '*(7-len(str(k))))+'|   %s'+(' '*(7-len(str(v))))) % (k,v)+'|')
             
         print(
             """+----------+----------+""")
@@ -125,7 +135,7 @@ turntables:
             while True:
                 cmd = raw_input('ds>')
                 if cmd in dscmds:
-                    getattr(self, cmd)()
+                    print getattr(self, cmd)()
                 elif cmd == 'q!':
                     self.cleanup()
                     print 'dataset removed'
@@ -139,31 +149,41 @@ turntables:
             return 'menu error'
         
     def avgroc(self):
-        x1 = raw_input('from>')
-        x2 = raw_input('to>')
+        if self.x1 is None or self.x2 is None:
+            self.x1 = raw_input('from>')
+            self.x2 = raw_input('to>')
         for k, v in self.dset.iteritems():
-            if v == x1:
+            if v == self.x1:
                 f_of_x1 = k
-            elif v == x2:
+            elif v == self.x2:
                 f_of_x2 = k
             
-        avg = "(%s - %s)/(%s - %s)" % (float(f_of_x2),
-                                       float(f_of_x1),
-                                       float(x2),
-                                       float(x1))
-        print "average rate of change is " + str(eval(avg))
+        self.avg = "(%s - %s)/(%s - %s)" % (float(f_of_x2),
+                                            float(f_of_x1),
+                                            float(self.x2),
+                                            float(self.x1))
+        return "average rate of change is " + str(eval(self.avg))
         
-    #def instroc(self):
-    #    
+    def instroc(self):
+        try:
+            self.x = raw_input('at>')
+#           for k,v in self.dset.iteritems():
+#                if v == self.
+            return "instantaneous rate of change is " + self.derivative().replace('derivative is','')
+        except:
+            return 'error, review your submission'
+        finally:
+            self.cleanup()
     
     def derivative(self):
         try:
             dydx = []
             eq = ""
-            self.lim = f_of_x = raw_input("f(x)=")
-            self.x = fprime = raw_input("f'@")
-            #if self.sanitize() is False:
-            #    return 'only integers and x'
+            if self.lim is None and self.x is None:
+                self.lim = f_of_x = raw_input("f(x)=")
+                self.x = fprime = raw_input("f'@")
+            if self.sanitize() is False:
+                return 'only integers and x'
             f_of_a = self.substitute_x(f_of_x, "("+str(float(fprime))+")")
             f_of_a_plus_x = self.substitute_x(
                 f_of_x,"("+str(fprime)+'+1x)')
