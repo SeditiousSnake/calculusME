@@ -72,15 +72,15 @@ class calculusME:
     
     def dataset(self):
         if not self.dset or self.opts['new_dset'] == True:
-            self.cleanup()
+            self.cleanup(dset=True)
             try:
                 print 'enter your table data (ie 1994(enter)0708(enter)'
                 self.kunit = raw_input('y unit>')
                 self.vunit = raw_input('x unit>')
                 while self.entered is False:
                     try:
-                        key = int(raw_input('f(x)>'))
-                        val = int(raw_input('x>'))
+                        key = float(raw_input('f(x)>'))
+                        val = float(raw_input('x>'))
                     except ValueError:
                         return "f(x) and x cannot contain letters"
                     self.dset[key] = val
@@ -117,7 +117,7 @@ calctables:
             
             print("""+----------+----------+""")
             print(
-                ('|  %s'+(' '*(7-len(self.kunit)))+'|  %s'+(' '*(8-len(self.vunit)))) % (self.kunit, self.vunit)+'|')
+                ('|  %s'+(' '*(8-len(self.kunit)))+'|  %s'+(' '*(8-len(self.vunit)))) % (self.kunit, self.vunit)+'|')
             print("""+----------+----------+""")
             print 'dataset acquired'
         else:
