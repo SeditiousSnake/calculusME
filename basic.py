@@ -7,6 +7,8 @@ from datetime import datetime as date
 
 '''Calculus Made Easy'''
 
+#re.search('(\(x(\+|\-|\/|\*)(\d+)\))', p).group(0)
+
 cmds = ['limit', 'derivative', 'dataset']
 dscmds = ['avgroc', 'instroc']
 
