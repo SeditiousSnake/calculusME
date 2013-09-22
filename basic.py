@@ -37,14 +37,20 @@ def factor(p):
 
 factor('(x+5)^2(x+3)^3(x+2)')
 
+import re
+
 class x:
-    def __init__(self):
-        pass
+    def __init__(self, var, pwr=1):
+        self.var = var
+        self.pwr = pwr
     
     def mul_behavior(self, p):
         try:
             if self.var is p.var:
-                print '%s^2' % self.var
+                newpwr = self.pwr + p.pwr
+                print '%s^%s' % (self.var, newpwr)
+        except AttributeError:
+            print 'except called'
     
     def __mul__(self, p):
         self.mul_behavior(p)
@@ -52,19 +58,23 @@ class x:
     def __rmul__(self, p):
         self.mul_behavior(p)
         
-x1 = x()
-x2 = x()
 
-x1 * x2
-
-eq = '(x+5)(x+3)'
+eq = 'x^2*x^3'
 xs = {}
 
-for x in range(len(re.findall('x', eq))):
-    xs['x%s'%x]
+for i,xi in enumerate(re.findall('(x(\^\d+))', eq)):
+    try:
+        pwr = re.search('\^(\d+)',xi).group(1)
+    except:
+        pass
+    xs['x%s'%i] = x(xi)
+    eq = eq.replace(xi, 'xs["x%s"]'%i)
 
+eval(eq)
 
-Solution to x:
+Solution to x(): (x^2+2)(x+3)
+
+Solution to factoring:
     -- get all instances of x
     -- add them to a unique key in a dict
         -- xs = {
@@ -72,7 +82,9 @@ Solution to x:
             'x2': 'x',
             'x3': 'x'
         }
-    -- assign each key
+    -- assign each key an x class value
+    -- replace each x in the eq string with xs[xkey]
+    -- eval(eq)
 '''
 
 cmds = ['limit', 'derivative', 'dataset']
