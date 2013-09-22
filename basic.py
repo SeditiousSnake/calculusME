@@ -36,6 +36,43 @@ def factor(p):
     print 'factors: ', factors
 
 factor('(x+5)^2(x+3)^3(x+2)')
+
+class x:
+    def __init__(self):
+        pass
+    
+    def mul_behavior(self, p):
+        try:
+            if self.var is p.var:
+                print '%s^2' % self.var
+    
+    def __mul__(self, p):
+        self.mul_behavior(p)
+    
+    def __rmul__(self, p):
+        self.mul_behavior(p)
+        
+x1 = x()
+x2 = x()
+
+x1 * x2
+
+eq = '(x+5)(x+3)'
+xs = {}
+
+for x in range(len(re.findall('x', eq))):
+    xs['x%s'%x]
+
+
+Solution to x:
+    -- get all instances of x
+    -- add them to a unique key in a dict
+        -- xs = {
+            'x1': 'x',
+            'x2': 'x',
+            'x3': 'x'
+        }
+    -- assign each key
 '''
 
 cmds = ['limit', 'derivative', 'dataset']
