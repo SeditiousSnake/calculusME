@@ -7,7 +7,36 @@ from datetime import datetime as date
 
 '''Calculus Made Easy'''
 
-#re.search('(\(x(\+|\-|\/|\*)(\d+)\))', p).group(0)
+'''
+import re
+
+def factor(p):
+    analyzing = True
+    factor_pattern = '(\(x(\+|\-|\/|\*)(\d+)\)\^(\d+))'
+#                      ^        ^         ^        ^
+#                      |1       |2        |3       |4
+    exponents = []
+    factors = []
+    print 'analyzing polynomial...'
+    while analyzing:
+        try:
+            expnt = re.search(factor_pattern, p).group(0)
+            p = p.replace(expnt, '')
+            expnt = expnt.replace('^', '**')
+            exponents.append(expnt)
+        except:
+            try:
+                fctr = re.search(factor_pattern.replace('\^(\d+)',''), p).group(0)
+                factors.append(fctr)
+                p = p.replace(fctr, '')
+            except:
+                analyzing = False
+    print 'new p: ', p
+    print 'exponents: ', exponents
+    print 'factors: ', factors
+
+factor('(x+5)^2(x+3)^3(x+2)')
+'''
 
 cmds = ['limit', 'derivative', 'dataset']
 dscmds = ['avgroc', 'instroc']
