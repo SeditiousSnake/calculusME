@@ -70,16 +70,14 @@ class x:
     def mul_behavior(self, p):
         try:
             if hasattr(p, 'var'):
+                #if we're multiplying two variables
                 self.coef *= p.coef
                 self = self.checkcoef()
                 if self.var is p.var:
+                    #if the two variables are the same
                     self.pwr += p.pwr
-                    self = self.checkpwr()
-                    if self.coef is not 1:
-                        print '%s(%s%s)' % (self.coef, self.var, self.pwr)
-                    else:
-                        print '(%s%s)' % (self.var, self.pwr)
-        
+                    self = self.checkpwr().checkcoef()
+                    print '%s(%s%s)' % (self.coef, self.var, self.pwr)
                 else:
                     self = self.checkpwr()
                     p = p.checkpwr()
@@ -92,40 +90,50 @@ class x:
                 print '%s%s%s' % (self.coef, self.var, self.pwr)
         except AttributeError:
             print 'exception raised at mul'
-            
-    def add_behavior(self, p):
+        
+    def add_sub_behavior(self, p, op):
         try:
             if hasattr(p, 'var'):
                 #if we're adding to variables
-                self.coef += p.coef
-                self = self.checkcoef()
                 if self.var is p.var:
                     #if we're adding to of the same variables
-                    self = self.checkpwr().checkcoef()
-                    p = p.checkpwr().checkcoef()
                     if self.pwr != p.pwr:
                         #if the vars have the same powers
-                        print ('%s%s%s+%s%s%s' % (self.coef, self.var, self.pwr,
-                                                    p.coef,    p.var,    p.pwr))
+                        self = self.checkpwr().checkcoef()
+                        p = p.checkpwr().checkcoef()
+                        print ('(%s%s%s)%s(%s%s%s)' % (self.coef, self.var, self.pwr,
+                                                       op, p.coef, p.var, p.pwr))
                     else:
                         #the matching variables don't have same power
+                        if op is '+':
+                            self.coef += p.coef
+                        else:
+                            self.coef -= p.coef
+                        self = self.checkpwr().checkcoef()
+                        p = p.checkpwr().checkcoef()
                         print '%s%s%s' % (self.coef, self.var, self.pwr)
                                                    
             elif int(p):
-                self = self.checkpwr()
-                self = self.checkcoef()
-                print '%s+%s%s%s' % (p, self.coef,
+                self = self.checkpwr().checkcoef()
+                print '%s%s%s%s%s' % (p, op, self.coef,
                                      self.var, self.pwr)
                 
         except:
-            print 'except called @ add'
-    
+            print 'except called @ add_sub'
+        
+        
     def __add__(self, p):
-        self.add_behavior(p)
+        self.add_sub_behavior(p, '+')
         
     def __radd__(self, p):
-        self.add_behavior(p)
-    
+        self.add_sub_behavior(p, '+')
+        
+    def __sub__(self, p):
+        self.add_sub_behavior(p, '-')
+        
+    def __rsub__(self, p):
+        self.add_sub_behavior(p, '-')
+        
     def __mul__(self, p):
         self.mul_behavior(p)
     
@@ -133,20 +141,20 @@ class x:
         self.mul_behavior(p)
         
 
-eq = '1x^2+4x^3'
+eq = '-4x^2--3x^3'
 xs = {}
-fpat = '((\-*\d*)([a-zA-Z]+)(\^(\-*\d+))*)'
+fpat = '((\-?\d*)([a-zA-Z]+)(\^(\-?\d+))*)'
 xgroups = re.findall(fpat, eq)
 print xgroups
 
 for i,xi in enumerate(xgroups):
     print xi
     try:
-        pwr = re.search('\^(\-*\d+)', xi[0]).group(1)
+        pwr = re.search('\^(\-?\d+)', xi[0]).group(1)
     except:
         pwr = 1
     try:
-        coef = re.search('(\-*\d+)\w+', xi[0]).group(1)
+        coef = re.search('(\-?\d+)\w+', xi[0]).group(1)
         print coef
     except:
         coef = 1
