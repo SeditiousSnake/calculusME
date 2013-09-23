@@ -163,7 +163,7 @@ class x:
 eq = raw_input('eq>')
 neweq = ''
 xs = {}
-fpat = '((\-?\d*)([a-zA-Z]+)(\^(\-?\d+))*(\+|\-|\*|\/)?)'
+fpat = '((\-?\d*)([a-zA-Z]+)(\^(\-?\d+))?(\+|\-|\*|\/)?)'
 xgroups = re.findall(fpat, eq)
 print xgroups
 
@@ -179,14 +179,13 @@ for i,xi in enumerate(xgroups):
         coef = 1
     print 'neweq', neweq
     print 'eq', eq
-    print 'rep', eq.replace(xi[0], 'xs["x%s"]%s'%(i,op),1)
     xs['x%s'%i] = x(xi[2], pwr, coef)
-    neweq += re.search('xs\["x%s"\]%s'%(i,op), eq.replace(xi[0], 'xs["x%s"]%s'%(i,op),1)).group(0)
+    neweq += re.search('xs\["x%s"\](\+|\-|\*|\/)?'%i, eq.replace(xi[0], 'xs["x%s"]%s'%(i,op),1)).group(0)
     eq = eq.replace(xi[0], '', 1)
 
 print neweq
-#eq = eq.replace('^', '**')
-#eval(eq)
+neweq = neweq.replace('^', '**')
+eval(neweq)
 '''
 
 cmds = ['limit', 'derivative', 'dataset']
