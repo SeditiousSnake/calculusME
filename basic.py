@@ -50,14 +50,59 @@ class x:
     
     def mul_behavior(self, p):
         try:
-            if isinstance(self, type(p)):
+            if isinstance(p, int):
+                self.coef *= p
+                if self.ceof is 1:
+                    self.coef = ''
+                elif self.coef is 0:
+                    print 0
+                if self.pwr is 1:
+                    self.pwr = ''
+                elif self.pwr is 0:
+                    self.pwr = ''
+                    self.var = 1
+                else:
+                    self.pwr = '^%s' % self.pwr
+                print '%s%s%s' % (self.coef, self.var, self.pwr)
+            elif isinstance(self, type(p)):
                 self.coef *= p.coef
+                if self.coef is 0:
+                    print 0
+                elif self.coef is 1:
+                    self.coef = ''
                 if self.var is p.var:
                     self.pwr += p.pwr
-                    if self.coef is not 1:
-                        print '%s%s^%s' % (self.coef, self.var, self.pwr)
+                    if self.pwr is 1:
+                        self.pwr = ''
+                    elif self.pwr is 0:
+                        self.pwr = ''
+                        self.var = ''
                     else:
-                        print '%s^%s' % (self.var, self.pwr)
+                        self.pwr = '^%s' % self.pwr
+                    if self.coef is not 1:
+                        print '%s%s%s' % (self.coef, self.var, self.pwr)
+                    else:
+                        print '%s%s' % (self.var, self.pwr)
+                else:
+                    if self.pwr is 1:
+                        self.pwr = ''
+                    elif self.pwr is 0:
+                        self.pwr = ''
+                        self.var = '1'
+                    else:
+                        self.pwr = '^%s' % self.pwr
+                    if p.pwr is 1:
+                        p.pwr = ''
+                    elif p.pwr is 0:
+                        p.pwr = ''
+                        p.var = '1'
+                    else:
+                        p.pwr = '^%s' % p.pwr
+                    print '%s(%s%s)(%s%s)' % (self.coef,
+                                              self.var,
+                                              self.pwr,
+                                              p.var,
+                                              p.pwr)
         except AttributeError:
             print 'except called'
     
@@ -68,17 +113,18 @@ class x:
         self.mul_behavior(p)
         
 
-eq = '4x^2*2x^3'
+eq = '1x^-3*1x'
+
 xs = {}
 
-fpat = '((\-*\d*)(\w+)(\^(\-*\d+)))'
+fpat = '((\-*\d*)(\w+)(\^(\-*\d+))*)'
 xgroups = re.findall(fpat, eq)
 print xgroups
 
 for i,xi in enumerate(xgroups):
     print xi
     try:
-        pwr = re.search('\^(\d+)', xi[0]).group(1)
+        pwr = re.search('\^(\-*\d+)', xi[0]).group(1)
     except:
         pwr = 1
     try:
@@ -87,7 +133,9 @@ for i,xi in enumerate(xgroups):
     except:
         coef = 1
     xs['x%s'%i] = x(xi[2], pwr, coef)
-    eq = eq.replace(xi[0], 'xs["x%s"]'%i)
+    print eq
+    eq = eq.replace(xi[0], 'xs["x%s"]'%i,1)
+    print eq
 
 eval(eq)
 '''
