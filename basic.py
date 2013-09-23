@@ -46,7 +46,6 @@ class x:
         self.var = var
         self.pwr = int(pwr)
         self.coef = int(coef)
-        print var, pwr, coef
     
     def checkpwr(self):
         if self.pwr is 1:
@@ -54,6 +53,8 @@ class x:
         elif self.pwr is 0:
             self.pwr = ''
             self.var = '1'
+        elif self.pwr is '' and self.coef is '':
+            self.var = 0
         else:
             self.pwr = '^%s' % self.pwr
         return self
@@ -85,10 +86,12 @@ class x:
                     self = self.checkpwr().checkcoef()
                     print '%s(%s%s)' % (self.coef, self.var, self.pwr)
                 else:
-                    self = self.checkpwr()
-                    p = p.checkpwr()
-                    print '%s(%s%s)(%s%s)' % (self.coef, self.var, self.pwr,
-                                              p.var, p.pwr)
+                    self = self.checkpwr().checkcoef()
+                    p = p.checkpwr().checkcoef()
+                    if self.var is 0 or p.var is 0:
+                        print 0
+                    else:
+                        print '%s(%s%s)%s(%s%s)' % (self.coef, self.var, self.pwr, op, p.var, p.pwr)
                                               
             elif int(p):
                 if op is '*':
@@ -156,27 +159,22 @@ class x:
         self.mul_div_behavior(p, '/')
         
 
-eq = '-4x^-3/-2x^-3'
+eq = '20x^-3/5x^5'
 xs = {}
 fpat = '((\-?\d*)([a-zA-Z]+)(\^(\-?\d+))*)'
 xgroups = re.findall(fpat, eq)
-print xgroups
 
 for i,xi in enumerate(xgroups):
-    print xi
     try:
         pwr = re.search('\^(\-?\d+)', xi[0]).group(1)
     except:
         pwr = 1
     try:
         coef = re.search('(\-?\d+)\w+', xi[0]).group(1)
-        print coef
     except:
         coef = 1
     xs['x%s'%i] = x(xi[2], pwr, coef)
-    print eq
     eq = eq.replace(xi[0], 'xs["x%s"]'%i,1)
-    print eq
 
 eq = eq.replace('^', '**')
 eval(eq)
