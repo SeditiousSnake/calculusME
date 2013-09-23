@@ -159,12 +159,16 @@ class x:
         self.mul_div_behavior(p, '/')
         
 
-eq = '20x^-3/5x^5'
+#eq = 'x'
+eq = raw_input('eq>')
+neweq = ''
 xs = {}
-fpat = '((\-?\d*)([a-zA-Z]+)(\^(\-?\d+))*)'
+fpat = '((\-?\d*)([a-zA-Z]+)(\^(\-?\d+))*(\+|\-|\*|\/)?)'
 xgroups = re.findall(fpat, eq)
+print xgroups
 
 for i,xi in enumerate(xgroups):
+    op = xi[5]
     try:
         pwr = re.search('\^(\-?\d+)', xi[0]).group(1)
     except:
@@ -173,11 +177,16 @@ for i,xi in enumerate(xgroups):
         coef = re.search('(\-?\d+)\w+', xi[0]).group(1)
     except:
         coef = 1
+    print 'neweq', neweq
+    print 'eq', eq
+    print 'rep', eq.replace(xi[0], 'xs["x%s"]%s'%(i,op),1)
     xs['x%s'%i] = x(xi[2], pwr, coef)
-    eq = eq.replace(xi[0], 'xs["x%s"]'%i,1)
+    neweq += re.search('xs\["x%s"\]%s'%(i,op), eq.replace(xi[0], 'xs["x%s"]%s'%(i,op),1)).group(0)
+    eq = eq.replace(xi[0], '', 1)
 
-eq = eq.replace('^', '**')
-eval(eq)
+print neweq
+#eq = eq.replace('^', '**')
+#eval(eq)
 '''
 
 cmds = ['limit', 'derivative', 'dataset']
