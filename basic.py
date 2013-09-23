@@ -37,18 +37,27 @@ def factor(p):
 
 factor('(x+5)^2(x+3)^3(x+2)')
 
+#!/usr/bin/env python
+
 import re
 
 class x:
-    def __init__(self, var, pwr=1):
+    def __init__(self, var, pwr, coef):
         self.var = var
-        self.pwr = pwr
+        self.pwr = int(pwr)
+        self.coef = int(coef)
+        print var, pwr, coef
     
     def mul_behavior(self, p):
         try:
-            if self.var is p.var:
-                newpwr = self.pwr + p.pwr
-                print '%s^%s' % (self.var, newpwr)
+            if isinstance(self, type(p)):
+                self.coef *= p.coef
+                if self.var is p.var:
+                    self.pwr += p.pwr
+                    if self.coef is not 1:
+                        print '%s%s^%s' % (self.coef, self.var, self.pwr)
+                    else:
+                        print '%s^%s' % (self.var, self.pwr)
         except AttributeError:
             print 'except called'
     
@@ -59,32 +68,28 @@ class x:
         self.mul_behavior(p)
         
 
-eq = 'x^2*x^3'
+eq = '4x^2*2x^3'
 xs = {}
 
-for i,xi in enumerate(re.findall('(x(\^\d+))', eq)):
+fpat = '((\-*\d*)(\w+)(\^(\-*\d+)))'
+xgroups = re.findall(fpat, eq)
+print xgroups
+
+for i,xi in enumerate(xgroups):
+    print xi
     try:
-        pwr = re.search('\^(\d+)',xi).group(1)
+        pwr = re.search('\^(\d+)', xi[0]).group(1)
     except:
-        pass
-    xs['x%s'%i] = x(xi)
-    eq = eq.replace(xi, 'xs["x%s"]'%i)
+        pwr = 1
+    try:
+        coef = re.search('(\-*\d+)\w+', xi[0]).group(1)
+        print coef
+    except:
+        coef = 1
+    xs['x%s'%i] = x(xi[2], pwr, coef)
+    eq = eq.replace(xi[0], 'xs["x%s"]'%i)
 
 eval(eq)
-
-Solution to x(): (x^2+2)(x+3)
-
-Solution to factoring:
-    -- get all instances of x
-    -- add them to a unique key in a dict
-        -- xs = {
-            'x1': 'x',
-            'x2': 'x',
-            'x3': 'x'
-        }
-    -- assign each key an x class value
-    -- replace each x in the eq string with xs[xkey]
-    -- eval(eq)
 '''
 
 cmds = ['limit', 'derivative', 'dataset']
