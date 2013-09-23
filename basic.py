@@ -67,15 +67,21 @@ class x:
             self.pwr = ''
         return self
         
-    def mul_behavior(self, p):
+    def mul_div_behavior(self, p, op):
         try:
             if hasattr(p, 'var'):
                 #if we're multiplying two variables
-                self.coef *= p.coef
+                if op is '*':
+                    self.coef *= p.coef
+                else:
+                    self.coef /= p.coef
                 self = self.checkcoef()
                 if self.var is p.var:
                     #if the two variables are the same
-                    self.pwr += p.pwr
+                    if op is '*':
+                        self.pwr += p.pwr
+                    else:
+                        self.pwr -= p.pwr
                     self = self.checkpwr().checkcoef()
                     print '%s(%s%s)' % (self.coef, self.var, self.pwr)
                 else:
@@ -85,7 +91,10 @@ class x:
                                               p.var, p.pwr)
                                               
             elif int(p):
-                self.coef *= p
+                if op is '*':
+                    self.coef *= p
+                else:
+                    self.coef /= p
                 self = self.checkcoef().checkpwr()
                 print '%s%s%s' % (self.coef, self.var, self.pwr)
         except AttributeError:
@@ -135,13 +144,19 @@ class x:
         self.add_sub_behavior(p, '-')
         
     def __mul__(self, p):
-        self.mul_behavior(p)
+        self.mul_div_behavior(p, '*')
     
     def __rmul__(self, p):
-        self.mul_behavior(p)
+        self.mul_div_behavior(p, '*')
+        
+    def __div__(self, p):
+        self.mul_div_behavior(p, '/')
+        
+    def __rdiv__(self, p):
+        self.mul_div_behavior(p, '/')
         
 
-eq = '-4x^2--3x^3'
+eq = '-4x^-3/-2x^-3'
 xs = {}
 fpat = '((\-?\d*)([a-zA-Z]+)(\^(\-?\d+))*)'
 xgroups = re.findall(fpat, eq)
