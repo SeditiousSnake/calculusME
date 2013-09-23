@@ -48,63 +48,51 @@ class x:
         self.coef = int(coef)
         print var, pwr, coef
     
+    def checkpwr(self):
+        if self.pwr is 1:
+            self.pwr = ''
+        elif self.pwr is 0:
+            self.pwr = ''
+            self.var = '1'
+        else:
+            self.pwr = '^%s' % self.pwr
+        return self.pwr, self.var
+        
+    def checkcoef(self):
+        if self.coef is 1:
+            self.coef = ''
+        elif self.coef is 0:
+            print 0
+        return self.coef
+        
     def mul_behavior(self, p):
-        try:
+        #try:
             if isinstance(p, int):
                 self.coef *= p
-                if self.ceof is 1:
-                    self.coef = ''
-                elif self.coef is 0:
-                    print 0
-                if self.pwr is 1:
-                    self.pwr = ''
-                elif self.pwr is 0:
-                    self.pwr = ''
-                    self.var = 1
-                else:
-                    self.pwr = '^%s' % self.pwr
+                self.coef = self.check.coef
+                self.pwr, self.var = self.checkpwr()
                 print '%s%s%s' % (self.coef, self.var, self.pwr)
             elif isinstance(self, type(p)):
                 self.coef *= p.coef
-                if self.coef is 0:
-                    print 0
-                elif self.coef is 1:
-                    self.coef = ''
+                self.coef = self.checkcoef()
                 if self.var is p.var:
                     self.pwr += p.pwr
-                    if self.pwr is 1:
-                        self.pwr = ''
-                    elif self.pwr is 0:
-                        self.pwr = ''
-                        self.var = ''
-                    else:
-                        self.pwr = '^%s' % self.pwr
+                    self.pwr, self.var = self.checkpwr()
                     if self.coef is not 1:
-                        print '%s%s%s' % (self.coef, self.var, self.pwr)
+                        print '%s(%s%s)' % (self.coef, self.var, self.pwr)
                     else:
-                        print '%s%s' % (self.var, self.pwr)
+                        print '(%s%s)' % (self.var, self.pwr)
+        
                 else:
-                    if self.pwr is 1:
-                        self.pwr = ''
-                    elif self.pwr is 0:
-                        self.pwr = ''
-                        self.var = '1'
-                    else:
-                        self.pwr = '^%s' % self.pwr
-                    if p.pwr is 1:
-                        p.pwr = ''
-                    elif p.pwr is 0:
-                        p.pwr = ''
-                        p.var = '1'
-                    else:
-                        p.pwr = '^%s' % p.pwr
+                    self.pwr, self.var = self.checkpwr()
+                    p.pwr, p.var = p.checkpwr()
                     print '%s(%s%s)(%s%s)' % (self.coef,
                                               self.var,
                                               self.pwr,
                                               p.var,
                                               p.pwr)
-        except AttributeError:
-            print 'except called'
+        #except AttributeError:
+        #    print 'except called'
     
     def __mul__(self, p):
         self.mul_behavior(p)
@@ -113,7 +101,7 @@ class x:
         self.mul_behavior(p)
         
 
-eq = '1x^-3*1x'
+eq = '1x^-3*4x^3'
 
 xs = {}
 
