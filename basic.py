@@ -56,43 +56,75 @@ class x:
             self.var = '1'
         else:
             self.pwr = '^%s' % self.pwr
-        return self.pwr, self.var
+        return self
         
     def checkcoef(self):
         if self.coef is 1:
             self.coef = ''
         elif self.coef is 0:
-            print 0
-        return self.coef
+            self.coef = ''
+            self.var = 0
+            self.pwr = ''
+        return self
         
     def mul_behavior(self, p):
-        #try:
-            if isinstance(p, int):
-                self.coef *= p
-                self.coef = self.check.coef
-                self.pwr, self.var = self.checkpwr()
-                print '%s%s%s' % (self.coef, self.var, self.pwr)
-            elif isinstance(self, type(p)):
+        try:
+            if hasattr(p, 'var'):
                 self.coef *= p.coef
-                self.coef = self.checkcoef()
+                self = self.checkcoef()
                 if self.var is p.var:
                     self.pwr += p.pwr
-                    self.pwr, self.var = self.checkpwr()
+                    self = self.checkpwr()
                     if self.coef is not 1:
                         print '%s(%s%s)' % (self.coef, self.var, self.pwr)
                     else:
                         print '(%s%s)' % (self.var, self.pwr)
         
                 else:
-                    self.pwr, self.var = self.checkpwr()
-                    p.pwr, p.var = p.checkpwr()
-                    print '%s(%s%s)(%s%s)' % (self.coef,
-                                              self.var,
-                                              self.pwr,
-                                              p.var,
-                                              p.pwr)
-        #except AttributeError:
-        #    print 'except called'
+                    self = self.checkpwr()
+                    p = p.checkpwr()
+                    print '%s(%s%s)(%s%s)' % (self.coef, self.var, self.pwr,
+                                              p.var, p.pwr)
+                                              
+            elif int(p):
+                self.coef *= p
+                self = self.checkcoef().checkpwr()
+                print '%s%s%s' % (self.coef, self.var, self.pwr)
+        except AttributeError:
+            print 'exception raised at mul'
+            
+    def add_behavior(self, p):
+        try:
+            if hasattr(p, 'var'):
+                #if we're adding to variables
+                self.coef += p.coef
+                self = self.checkcoef()
+                if self.var is p.var:
+                    #if we're adding to of the same variables
+                    self = self.checkpwr().checkcoef()
+                    p = p.checkpwr().checkcoef()
+                    if self.pwr != p.pwr:
+                        #if the vars have the same powers
+                        print ('%s%s%s+%s%s%s' % (self.coef, self.var, self.pwr,
+                                                    p.coef,    p.var,    p.pwr))
+                    else:
+                        #the matching variables don't have same power
+                        print '%s%s%s' % (self.coef, self.var, self.pwr)
+                                                   
+            elif int(p):
+                self = self.checkpwr()
+                self = self.checkcoef()
+                print '%s+%s%s%s' % (p, self.coef,
+                                     self.var, self.pwr)
+                
+        except:
+            print 'except called @ add'
+    
+    def __add__(self, p):
+        self.add_behavior(p)
+        
+    def __radd__(self, p):
+        self.add_behavior(p)
     
     def __mul__(self, p):
         self.mul_behavior(p)
@@ -101,11 +133,9 @@ class x:
         self.mul_behavior(p)
         
 
-eq = '1x^-3*4x^3'
-
+eq = '1x^2+4x^3'
 xs = {}
-
-fpat = '((\-*\d*)(\w+)(\^(\-*\d+))*)'
+fpat = '((\-*\d*)([a-zA-Z]+)(\^(\-*\d+))*)'
 xgroups = re.findall(fpat, eq)
 print xgroups
 
@@ -125,6 +155,7 @@ for i,xi in enumerate(xgroups):
     eq = eq.replace(xi[0], 'xs["x%s"]'%i,1)
     print eq
 
+eq = eq.replace('^', '**')
 eval(eq)
 '''
 
