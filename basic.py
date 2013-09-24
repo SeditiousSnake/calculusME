@@ -163,12 +163,18 @@ class x:
 eq = raw_input('eq>')
 neweq = ''
 xs = {}
-fpat = '((\-?\d*)([a-zA-Z]+)(\^(\-?\d+))?(\+|\-|\*|\/)?)'
+fpat = '((\-?\d*)([a-zA-Z1-9]+)(\^(\-?\d+))?(\+|\-|\*|\/)?)'
 xgroups = re.findall(fpat, eq)
 print xgroups
 
 for i,xi in enumerate(xgroups):
     op = xi[5]
+    try:
+        coef = int(xi[0].replace(xi[5],''))
+        neweq += '%s%s' % (coef, op)
+        continue
+    except:
+        pass
     try:
         pwr = re.search('\^(\-?\d+)', xi[0]).group(1)
     except:
