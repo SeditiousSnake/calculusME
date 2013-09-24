@@ -9,6 +9,33 @@ from datetime import datetime as date
 
 '''
 import re
+s = '(x+a)(x+b)(x+c)(x+d)'
+
+fpat = '\((\w+)(\+|\-|\*|\/){1}(\w+)\)'
+
+factors = re.findall(fpat, s)
+refactor = []
+ans = []
+
+while len(factors) > 1:
+    u1 = '%s*%s' % (factors[0][0], factors[1][0])
+    u2 = '%s*%s' % (factors[0][0], factors[1][2])
+    u3 = '%s*%s' % (factors[0][2], factors[1][0])
+    u4 = '%s*%s' % (factors[0][2], factors[1][2])
+    if factors[0] in refactor:
+        refactor.remove(factors[0])
+    factors.remove(factors[0])
+    refactor += [(u1,u2,u3,u4)] + factors
+    if len(factors) is 1:
+        refactor.remove(factors[0])
+        if factors[0] in refactor:
+            refactor.remove(factors[0])
+        factors.remove(factors[0])
+    
+
+print refactor
+
+import re
 
 def factor(p):
     analyzing = True
