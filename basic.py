@@ -42,10 +42,11 @@ factor('(x+5)^2(x+3)^3(x+2)')
 import re
 
 class x:
-    def __init__(self, var, pwr, coef):
+    def __init__(self, var, pwr, coef, op):
         self.var = var
         self.pwr = int(pwr)
         self.coef = int(coef)
+        self.op = op
     
     def checkpwr(self):
         if self.pwr is 1:
@@ -113,8 +114,12 @@ class x:
                         #if the vars have the same powers
                         self = self.checkpwr().checkcoef()
                         p = p.checkpwr().checkcoef()
-                        print ('(%s%s%s)%s(%s%s%s)' % (self.coef, self.var, self.pwr,
-                                                       op, p.coef, p.var, p.pwr))
+                        if not self.op:
+                            print ('(%s%s%s)%s(%s%s%s)' % (p.coef, p.var, p.pwr, op,
+                                                           self.coef, self.var, self.var))
+                        else:
+                            print ('(%s%s%s)%s(%s%s%s)' % (self.coef, self.var, self.pwr,
+                                                           op, p.coef, p.var, p.pwr))
                     else:
                         #the matching variables don't have same power
                         if op is '+':
@@ -127,8 +132,12 @@ class x:
                                                    
             elif int(p):
                 self = self.checkpwr().checkcoef()
-                print '%s%s%s%s%s' % (p, op, self.coef,
-                                     self.var, self.pwr)
+                if not self.op:
+                    print '%s%s%s%s%s' % (p, op, self.coef,
+                                          self.var, self.pwr)
+                else:
+                    print '%s%s%s%s%s' % (self.coef, self.var, self.pwr,
+                                          op, p)
                 
         except:
             print 'except called @ add_sub'
@@ -159,7 +168,6 @@ class x:
         self.mul_div_behavior(p, '/')
         
 
-#eq = 'x'
 eq = raw_input('eq>')
 neweq = ''
 xs = {}
@@ -185,7 +193,7 @@ for i,xi in enumerate(xgroups):
         coef = 1
     print 'neweq', neweq
     print 'eq', eq
-    xs['x%s'%i] = x(xi[2], pwr, coef)
+    xs['x%s'%i] = x(xi[2], pwr, coef, xi[5])
     neweq += re.search('xs\["x%s"\](\+|\-|\*|\/)?'%i, eq.replace(xi[0], 'xs["x%s"]%s'%(i,op),1)).group(0)
     eq = eq.replace(xi[0], '', 1)
 
