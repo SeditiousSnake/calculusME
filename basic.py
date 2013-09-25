@@ -35,45 +35,23 @@ while len(factors) > 1:
 
 print refactor
 
-import re
-
-def factor(p):
-    analyzing = True
-    factor_pattern = '(\(x(\+|\-|\/|\*)(\d+)\)\^(\d+))'
-#                      ^        ^         ^        ^
-#                      |1       |2        |3       |4
-    exponents = []
-    factors = []
-    print 'analyzing polynomial...'
-    while analyzing:
-        try:
-            expnt = re.search(factor_pattern, p).group(0)
-            p = p.replace(expnt, '')
-            expnt = expnt.replace('^', '**')
-            exponents.append(expnt)
-        except:
-            try:
-                fctr = re.search(factor_pattern.replace('\^(\d+)',''), p).group(0)
-                factors.append(fctr)
-                p = p.replace(fctr, '')
-            except:
-                analyzing = False
-    print 'new p: ', p
-    print 'exponents: ', exponents
-    print 'factors: ', factors
-
-factor('(x+5)^2(x+3)^3(x+2)')
-
 #!/usr/bin/env python
 
-import re
+try:
+    import re
+except ImportError:
+    print 'required library not installed'
 
 class x:
     def __init__(self, var, pwr, coef, op):
-        self.var = var
-        self.pwr = int(pwr)
-        self.coef = int(coef)
-        self.op = op
+        try:
+            self.var = var
+            self.pwr = int(pwr)
+            self.coef = int(coef)
+            self.op = op
+        except ValueError:
+            print 'wrong value types given'
+            self = None
     
     def checkpwr(self):
         if self.pwr is 1:
@@ -122,6 +100,7 @@ class x:
                         print '%s(%s%s)%s(%s%s)' % (self.coef, self.var, self.pwr, op, p.var, p.pwr)
                                               
             elif int(p):
+                #if we're multiplying a variable by an integer
                 if op is '*':
                     self.coef *= p
                 else:
@@ -169,6 +148,13 @@ class x:
         except:
             print 'except called @ add_sub'
         
+    def pow_behavior(self, p):
+        try:
+            self.pwr = '^%s' % str(self.pwr*p)
+            self.coef **= p
+            print '%s%s%s' % (self.coef, self.var, self.pwr)
+        except:
+            print 'except raised @ pow'
         
     def __add__(self, p):
         self.add_sub_behavior(p, '+')
@@ -194,39 +180,53 @@ class x:
     def __rdiv__(self, p):
         self.mul_div_behavior(p, '/')
         
+    def __pow__(self, p):
+        self.pow_behavior(p)
+
 
 eq = raw_input('eq>')
 neweq = ''
 xs = {}
-fpat = '((\-?\d*)([a-zA-Z1-9]+)(\^(\-?\d+))?(\+|\-|\*|\/)?)'
+fpat = '((\^?\-?\d*)([a-zA-Z1-9]+)(\^(\-?\d+))?(\+|\-|\*|\/)?)'
 xgroups = re.findall(fpat, eq)
 print xgroups
+
 
 for i,xi in enumerate(xgroups):
     op = xi[5]
     try:
+        if xi[1] is '^':
+            coef = int(xi[2])
+            neweq += '%s' % xi[0]
+            continue
         coef = int(xi[0].replace(xi[5],''))
         neweq += '%s%s' % (coef, op)
         continue
     except:
         pass
-    try:
-        pwr = re.search('\^(\-?\d+)', xi[0]).group(1)
-    except:
+    if xi[4]:
+        pwr = xi[4]
+    else:
         pwr = 1
-    try:
-        coef = re.search('(\-?\d+)\w+', xi[0]).group(1)
-    except:
+    if xi[1]:
+        coef = xi[1]
+    else:
         coef = 1
     print 'neweq', neweq
     print 'eq', eq
     xs['x%s'%i] = x(xi[2], pwr, coef, xi[5])
-    neweq += re.search('xs\["x%s"\](\+|\-|\*|\/)?'%i, eq.replace(xi[0], 'xs["x%s"]%s'%(i,op),1)).group(0)
+    classpat = 'xs\["x%s"\](\+|\-|\*|\/)?' % i
+    neweq += re.search(classpat, eq.replace(xi[0], 'xs["x%s"]%s'%(i,op),1)).group(0)
     eq = eq.replace(xi[0], '', 1)
+
 
 print neweq
 neweq = neweq.replace('^', '**')
-eval(neweq)
+try:
+    eval(neweq)
+except SyntaxError as e:
+    print 'error: %s' % e.msg
+
 '''
 
 cmds = ['limit', 'derivative', 'dataset']
