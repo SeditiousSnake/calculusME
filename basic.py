@@ -90,14 +90,14 @@ class x:
                     else:
                         self.pwr -= p.pwr
                     self = self.checkpwr().checkcoef()
-                    print '%s(%s%s)' % (self.coef, self.var, self.pwr)
+                    return '%s(%s%s)' % (self.coef, self.var, self.pwr)
                 else:
                     self = self.checkpwr().checkcoef()
                     p = p.checkpwr().checkcoef()
                     if self.var is 0 or p.var is 0:
-                        print 0
+                        return 0
                     else:
-                        print '%s(%s%s)%s(%s%s)' % (self.coef, self.var, self.pwr, op, p.var, p.pwr)
+                        return '%s(%s%s)%s(%s%s)' % (self.coef, self.var, self.pwr, op, p.var, p.pwr)
                                               
             elif int(p):
                 #if we're multiplying a variable by an integer
@@ -106,7 +106,7 @@ class x:
                 else:
                     self.coef /= p
                 self = self.checkcoef().checkpwr()
-                print '%s%s%s' % (self.coef, self.var, self.pwr)
+                return '%s%s%s' % (self.coef, self.var, self.pwr)
         except AttributeError:
             print 'exception raised at mul'
         
@@ -121,10 +121,10 @@ class x:
                         self = self.checkpwr().checkcoef()
                         p = p.checkpwr().checkcoef()
                         if not self.op:
-                            print ('(%s%s%s)%s(%s%s%s)' % (p.coef, p.var, p.pwr, op,
+                            return ('(%s%s%s)%s(%s%s%s)' % (p.coef, p.var, p.pwr, op,
                                                            self.coef, self.var, self.var))
                         else:
-                            print ('(%s%s%s)%s(%s%s%s)' % (self.coef, self.var, self.pwr,
+                            return ('(%s%s%s)%s(%s%s%s)' % (self.coef, self.var, self.pwr,
                                                            op, p.coef, p.var, p.pwr))
                     else:
                         #the matching variables don't have same power
@@ -134,15 +134,15 @@ class x:
                             self.coef -= p.coef
                         self = self.checkpwr().checkcoef()
                         p = p.checkpwr().checkcoef()
-                        print '%s%s%s' % (self.coef, self.var, self.pwr)
+                        return '%s%s%s' % (self.coef, self.var, self.pwr)
                                                    
             elif int(p):
                 self = self.checkpwr().checkcoef()
                 if not self.op:
-                    print '%s%s%s%s%s' % (p, op, self.coef,
+                    return '%s%s%s%s%s' % (p, op, self.coef,
                                           self.var, self.pwr)
                 else:
-                    print '%s%s%s%s%s' % (self.coef, self.var, self.pwr,
+                    return '%s%s%s%s%s' % (self.coef, self.var, self.pwr,
                                           op, p)
                 
         except:
@@ -152,80 +152,90 @@ class x:
         try:
             self.pwr = '^%s' % str(self.pwr*p)
             self.coef **= p
-            print '%s%s%s' % (self.coef, self.var, self.pwr)
+            return '%s%s%s' % (self.coef, self.var, self.pwr)
         except:
             print 'except raised @ pow'
         
     def __add__(self, p):
-        self.add_sub_behavior(p, '+')
+        return self.add_sub_behavior(p, '+')
         
     def __radd__(self, p):
-        self.add_sub_behavior(p, '+')
+        return self.add_sub_behavior(p, '+')
         
     def __sub__(self, p):
-        self.add_sub_behavior(p, '-')
+        return self.add_sub_behavior(p, '-')
         
     def __rsub__(self, p):
-        self.add_sub_behavior(p, '-')
+        return self.add_sub_behavior(p, '-')
         
     def __mul__(self, p):
-        self.mul_div_behavior(p, '*')
+        return self.mul_div_behavior(p, '*')
     
     def __rmul__(self, p):
-        self.mul_div_behavior(p, '*')
+        return self.mul_div_behavior(p, '*')
         
     def __div__(self, p):
-        self.mul_div_behavior(p, '/')
+        return self.mul_div_behavior(p, '/')
         
     def __rdiv__(self, p):
-        self.mul_div_behavior(p, '/')
+        return self.mul_div_behavior(p, '/')
         
     def __pow__(self, p):
-        self.pow_behavior(p)
+        return self.pow_behavior(p)
 
 
-eq = raw_input('eq>')
-neweq = ''
-xs = {}
 fpat = '((\^?\-?\d*)([a-zA-Z1-9]+)(\^(\-?\d+))?(\+|\-|\*|\/)?)'
-xgroups = re.findall(fpat, eq)
-print xgroups
 
-
-for i,xi in enumerate(xgroups):
-    op = xi[5]
-    try:
-        if xi[1] is '^':
-            coef = int(xi[2])
-            neweq += '%s' % xi[0]
+def observe_x(old=False, solve=True):
+    if old is False:
+        eq = raw_input('eq>')
+    else:
+        eq = old
+    xs = {}
+    fpat = '((\^?\-?\d*)([a-zA-Z1-9]+)(\^(\-?\d+))?(\+|\-|\*|\/)?)'
+    neweq = ''
+    xgroups = re.findall(fpat, eq)
+    print xgroups
+    for i,xi in enumerate(xgroups):
+        op = xi[5]
+        try:
+            if xi[1] is '^':
+                coef = int(xi[2])
+                neweq += '%s' % xi[0]
+                continue
+            coef = int(xi[0].replace(xi[5],''))
+            neweq += '%s%s' % (coef, op)
+            print 'evaluating int %s...' % xi[2]
             continue
-        coef = int(xi[0].replace(xi[5],''))
-        neweq += '%s%s' % (coef, op)
-        continue
-    except:
-        pass
-    if xi[4]:
-        pwr = xi[4]
-    else:
-        pwr = 1
-    if xi[1]:
-        coef = xi[1]
-    else:
-        coef = 1
-    print 'neweq', neweq
-    print 'eq', eq
-    xs['x%s'%i] = x(xi[2], pwr, coef, xi[5])
-    classpat = 'xs\["x%s"\](\+|\-|\*|\/)?' % i
-    neweq += re.search(classpat, eq.replace(xi[0], 'xs["x%s"]%s'%(i,op),1)).group(0)
-    eq = eq.replace(xi[0], '', 1)
+        except:
+            pass
+        if xi[4]:
+            pwr = xi[4]
+        else:
+            pwr = 1
+        if xi[1]:
+            coef = xi[1]
+        else:
+            coef = 1
+        print 'neweq', neweq
+        print 'eq', eq
+        xs['x%s'%i] = x(xi[2], pwr, coef, xi[5])
+        classpat = 'xs\["x%s"\](\+|\-|\*|\/)?' % i
+        neweq += re.search(classpat, eq.replace(xi[0], 'xs["x%s"]%s'%(i,op),1)).group(0)
+        eq = eq.replace(xi[0], '', 1)
+    if solve:
+        print neweq
+        neweq = neweq.replace('^', '**')
+        #try:
+        expression = 'ans = %s' % neweq
+        exec(expression)
+        print expression
+        print ans
+        #except SyntaxError as e:
+        #    print 'error: %s' % e.msg
+    return neweq, xs
 
-
-print neweq
-neweq = neweq.replace('^', '**')
-try:
-    eval(neweq)
-except SyntaxError as e:
-    print 'error: %s' % e.msg
+neweq, xs = observe_x()
 
 '''
 
